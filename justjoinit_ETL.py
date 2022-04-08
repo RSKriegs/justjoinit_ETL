@@ -224,8 +224,10 @@ class Transformer:
                                 'currency']
                             if details['salary.currency [permanent]'][i]!='pln':
                                 try:
-                                    details.loc[i, 'salary.from [permanent]'] = data['Employment types'][i][j]['salary']['from']/currency_rates[str(details['salary.currency [permanent]'][i]).upper()]
-                                    details.loc[i, 'salary.to [permanent]'] = data['Employment types'][i][j]['salary']['to']/currency_rates[str(details['salary.currency [permanent]'][i]).upper()]
+                                    details.loc[i, 'salary.from [permanent]'] = data['Employment types'][i][j]['salary']
+                                    ['from']/currency_rates[str(details['salary.currency [permanent]'][i]).upper()]
+                                    details.loc[i, 'salary.to [permanent]'] = data['Employment types'][i][j]['salary']
+                                    ['to']/currency_rates[str(details['salary.currency [permanent]'][i]).upper()]
                                 except:
                                     details.loc[i, 'salary.from [permanent]'] = data['Employment types'][i][j]['salary'][
                                         'from']
@@ -241,8 +243,10 @@ class Transformer:
                                 'currency']
                             if details['salary.currency [b2b]'][i] != 'pln':
                                 try:
-                                    details.loc[i, 'salary.from [b2b]'] = data['Employment types'][i][j]['salary']['from']/currency_rates[str(details['salary.currency [b2b]'][i]).upper()]
-                                    details.loc[i, 'salary.to [b2b]'] = data['Employment types'][i][j]['salary']['to']/currency_rates[str(details['salary.currency [b2b]'][i]).upper()]
+                                    details.loc[i, 'salary.from [b2b]'] = data['Employment types'][i][j]['salary']
+                                    ['from']/currency_rates[str(details['salary.currency [b2b]'][i]).upper()]
+                                    details.loc[i, 'salary.to [b2b]'] = data['Employment types'][i][j]['salary']
+                                    ['to']/currency_rates[str(details['salary.currency [b2b]'][i]).upper()]
                                 except:
                                     details.loc[i, 'salary.from [b2b]'] = data['Employment types'][i][j]['salary'][
                                         'from']
@@ -258,8 +262,10 @@ class Transformer:
                                 'currency']
                             if details['salary.currency [mandate]'][i] != 'pln':
                                 try:
-                                    details.loc[i, 'salary.from [mandate]'] = data['Employment types'][i][j]['salary']['from']/currency_rates[str(details['salary.currency [mandate]'][i]).upper()]
-                                    details.loc[i, 'salary.to [mandate]'] = data['Employment types'][i][j]['salary']['to']/currency_rates[str(details['salary.currency [mandate]'][i]).upper()]
+                                    details.loc[i, 'salary.from [mandate]'] = data['Employment types'][i][j]['salary']
+                                    ['from']/currency_rates[str(details['salary.currency [mandate]'][i]).upper()]
+                                    details.loc[i, 'salary.to [mandate]'] = data['Employment types'][i][j]['salary']
+                                    ['to']/currency_rates[str(details['salary.currency [mandate]'][i]).upper()]
                                 except:
                                     details.loc[i, 'salary.from [mandate]'] = data['Employment types'][i][j]['salary'][
                                         'from']
@@ -275,8 +281,10 @@ class Transformer:
                                 'currency']
                             if details['salary.currency [other]'][i] != 'pln':
                                 try:
-                                    details.loc[i, 'salary.from [other]'] = data['Employment types'][i][j]['salary']['from']/currency_rates[str(details['salary.currency [other]'][i]).upper()]
-                                    details.loc[i, 'salary.to [other]'] = data['Employment types'][i][j]['salary']['to']/currency_rates[str(details['salary.currency [other]'][i]).upper()]
+                                    details.loc[i, 'salary.from [other]'] = data['Employment types'][i][j]['salary']
+                                    ['from']/currency_rates[str(details['salary.currency [other]'][i]).upper()]
+                                    details.loc[i, 'salary.to [other]'] = data['Employment types'][i][j]['salary']
+                                    ['to']/currency_rates[str(details['salary.currency [other]'][i]).upper()]
                                 except:
                                     details.loc[i, 'salary.from [mandate]'] = data['Employment types'][i][j]['salary'][
                                        'from']
