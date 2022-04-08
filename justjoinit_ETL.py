@@ -233,6 +233,10 @@ class Transformer:
                                         'from']
                                     details.loc[i, 'salary.to [permanent]'] = data['Employment types'][i][j]['salary']['to']
                                     details.loc[i, 'currency check'] = 'unknown'
+                            else:
+                                details.loc[i, 'salary.from [permanent]'] = data['Employment types'][i][j]['salary'][
+                                    'from']
+                                details.loc[i, 'salary.to [permanent]'] = data['Employment types'][i][j]['salary']['to']
                     elif data['Employment types'][i][j]['type'] == 'b2b':
                         #if data['Employment types list'][i] == '':
                         #    data['Employment types list'][i] = 'b2b'
@@ -252,6 +256,10 @@ class Transformer:
                                         'from']
                                     details.loc[i, 'salary.to [b2b]'] = data['Employment types'][i][j]['salary']['to']
                                     details.loc[i, 'currency check'] = 'unknown'
+                            else:
+                                details.loc[i, 'salary.from [b2b]'] = data['Employment types'][i][j]['salary'][
+                                    'from']
+                                details.loc[i, 'salary.to [b2b]'] = data['Employment types'][i][j]['salary']['to']
                     elif data['Employment types'][i][j]['type'] == 'mandate_contract':
                         #if data['Employment types list'][i] == '':
                         #    data['Employment types list'][i] = 'mandate'
@@ -271,6 +279,10 @@ class Transformer:
                                         'from']
                                     details.loc[i, 'salary.to [mandate]'] = data['Employment types'][i][j]['salary']['to']
                                     details.loc[i, 'currency check'] = 'unknown'
+                            else:
+                                details.loc[i, 'salary.from [mandate]'] = data['Employment types'][i][j]['salary'][
+                                    'from']
+                                details.loc[i, 'salary.to [mandate]'] = data['Employment types'][i][j]['salary']['to']
                     else:
                         #if data['Employment types list'][i] == '':
                         #    data['Employment types list'][i] = 'other'
@@ -290,6 +302,10 @@ class Transformer:
                                        'from']
                                     details.loc[i, 'salary.to [mandate]'] = data['Employment types'][i][j]['salary']['to']
                                     details.loc[i, 'currency check'] = 'unknown'
+                            else:
+                                details.loc[i, 'salary.from [other]'] = data['Employment types'][i][j]['salary'][
+                                    'from']
+                                details.loc[i, 'salary.to [other]'] = data['Employment types'][i][j]['salary']['to']
                     j += 1
 
                 # skills
@@ -343,9 +359,9 @@ class Loader:
                         'salary_currency_permanent', 'salary_from_b2b', 'salary_to_b2b', 'salary_currency_b2b',
                         'salary_from_mandate',
                         'salary_to_mandate', 'salary_currency_mandate', 'salary_from_other', 'salary_to_other',
-                        'salary_currency_other',
+                        'salary_currency_other', 'currency_check',
                         'skills_name_0', 'skills_value_0', 'skills_name_1', 'skills_value_1', 'skills_name_2',
-                        'skills_value_2','currency_check']
+                        'skills_value_2']
         print(datetime.now().strftime("%H:%M:%S") + ': Loaded transformed final data into class')
         return data
 
