@@ -332,7 +332,7 @@ class Transformer:
         data = self.transform_data()
         if self.if_test == 'Y':
             data.to_csv('final_test_data.csv', index=False, encoding="utf-8")
-        else:
+        elif len(data.columns)==39:
             data.to_csv('final_data.csv', index=False, encoding="utf-8")
         print(datetime.now().strftime("%H:%M:%S") + ': Transformed final data exported.')
 
