@@ -6,3 +6,4 @@ google-cloud==0.34.0
 google-cloud-bigquery==3.0.1
 google-cloud-storage==2.2.1
 pandas-gbq==0.17.4
+forex-python==1.8

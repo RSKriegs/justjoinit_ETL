@@ -5,10 +5,11 @@ import pandas as pd
 import sys
 import argparse
 import time
-from datetime import date
-from datetime import datetime
+import re
+from datetime import date, datetime, timedelta
 from pathlib import Path
-
+from forex_python.converter import CurrencyRates
+from google.cloud import bigquery
 
 class Extractor:
 
@@ -193,11 +194,20 @@ class Transformer:
         if not data.empty:
             data['Employment types'] = data['Employment types'].apply(lambda x: eval(x))
             data['Skills'] = data['Skills'].apply(lambda x: eval(x))
+            data['Company Size'] = data['Company Size'].str.replace('-', 'STOP')
+            data['Company Size'] = data['Company Size'].apply(lambda x: re.sub(r"[^a-zA-Z0-9]", "", str(x)))
+            try:
+                data[['Company Size from', 'Company Size to']] = data['Company Size'].str.split('STOP', expand=True)
+            except:
+                data[['Company Size from']]=data['Company Size']
+                data[['Company Size to']]=None
+            #data['Employment types list'] = ''
             details = pd.DataFrame(columns=['Id jj.it', 'salary.from [permanent]', 'salary.to [permanent]',
                                             'salary.currency [permanent]', 'salary.from [b2b]', 'salary.to [b2b]',
                                             'salary.currency [b2b]', 'salary.from [mandate]', 'salary.to [mandate]',
                                             'salary.currency [mandate]', 'salary.from [other]', 'salary.to [other]',
-                                            'salary.currency [other]'])
+                                            'salary.currency [other]','currency check'])
+            currency_rates = CurrencyRates().get_rates('PLN')
             i = 0
             while i < len(data):
                 details.loc[i, 'Id jj.it'] = data['Id jj.it'][i]
@@ -208,29 +218,70 @@ class Transformer:
                 len_record = len(data['Employment types'][i])
                 while j < len_record:
                     if data['Employment types'][i][j]['type'] == 'permanent':
+                        #data['Employment types list'][i] = 'permanent'
                         if data['Employment types'][i][j]['salary'] != None:
-                            details.loc[i, 'salary.from [permanent]'] = data['Employment types'][i][j]['salary']['from']
-                            details.loc[i, 'salary.to [permanent]'] = data['Employment types'][i][j]['salary']['to']
                             details.loc[i, 'salary.currency [permanent]'] = data['Employment types'][i][j]['salary'][
                                 'currency']
+                            if details['salary.currency [permanent]'][i]!='pln':
+                                try:
+                                    details.loc[i, 'salary.from [permanent]'] = data['Employment types'][i][j]['salary']['from']/currency_rates[str(details['salary.currency [permanent]'][i]).upper()]
+                                    details.loc[i, 'salary.to [permanent]'] = data['Employment types'][i][j]['salary']['to']/currency_rates[str(details['salary.currency [permanent]'][i]).upper()]
+                                except:
+                                    details.loc[i, 'salary.from [permanent]'] = data['Employment types'][i][j]['salary'][
+                                        'from']
+                                    details.loc[i, 'salary.to [permanent]'] = data['Employment types'][i][j]['salary']['to']
+                                    details.loc[i, 'currency check'] = 'unknown'
                     elif data['Employment types'][i][j]['type'] == 'b2b':
+                        #if data['Employment types list'][i] == '':
+                        #    data['Employment types list'][i] = 'b2b'
+                        #else:
+                        #    data['Employment types list'][i]=data['Employment types list'][i]+',b2b'
                         if data['Employment types'][i][j]['salary'] != None:
-                            details.loc[i, 'salary.from [b2b]'] = data['Employment types'][i][j]['salary']['from']
-                            details.loc[i, 'salary.to [b2b]'] = data['Employment types'][i][j]['salary']['to']
                             details.loc[i, 'salary.currency [b2b]'] = data['Employment types'][i][j]['salary'][
                                 'currency']
+                            if details['salary.currency [b2b]'][i] != 'pln':
+                                try:
+                                    details.loc[i, 'salary.from [b2b]'] = data['Employment types'][i][j]['salary']['from']/currency_rates[str(details['salary.currency [b2b]'][i]).upper()]
+                                    details.loc[i, 'salary.to [b2b]'] = data['Employment types'][i][j]['salary']['to']/currency_rates[str(details['salary.currency [b2b]'][i]).upper()]
+                                except:
+                                    details.loc[i, 'salary.from [b2b]'] = data['Employment types'][i][j]['salary'][
+                                        'from']
+                                    details.loc[i, 'salary.to [b2b]'] = data['Employment types'][i][j]['salary']['to']
+                                    details.loc[i, 'currency check'] = 'unknown'
                     elif data['Employment types'][i][j]['type'] == 'mandate_contract':
+                        #if data['Employment types list'][i] == '':
+                        #    data['Employment types list'][i] = 'mandate'
+                        #else:
+                        #    data['Employment types list'][i]=data['Employment types list'][i]+',mandate'
                         if data['Employment types'][i][j]['salary'] != None:
-                            details.loc[i, 'salary.from [mandate]'] = data['Employment types'][i][j]['salary']['from']
-                            details.loc[i, 'salary.to [mandate]'] = data['Employment types'][i][j]['salary']['to']
                             details.loc[i, 'salary.currency [mandate]'] = data['Employment types'][i][j]['salary'][
                                 'currency']
+                            if details['salary.currency [mandate]'][i] != 'pln':
+                                try:
+                                    details.loc[i, 'salary.from [mandate]'] = data['Employment types'][i][j]['salary']['from']/currency_rates[str(details['salary.currency [mandate]'][i]).upper()]
+                                    details.loc[i, 'salary.to [mandate]'] = data['Employment types'][i][j]['salary']['to']/currency_rates[str(details['salary.currency [mandate]'][i]).upper()]
+                                except:
+                                    details.loc[i, 'salary.from [mandate]'] = data['Employment types'][i][j]['salary'][
+                                        'from']
+                                    details.loc[i, 'salary.to [mandate]'] = data['Employment types'][i][j]['salary']['to']
+                                    details.loc[i, 'currency check'] = 'unknown'
                     else:
+                        #if data['Employment types list'][i] == '':
+                        #    data['Employment types list'][i] = 'other'
+                        #else:
+                        #    data['Employment types list'][i]=data['Employment types list'][i]+',other'
                         if data['Employment types'][i][j]['salary'] != None:
-                            details.loc[i, 'salary.from [other]'] = data['Employment types'][i][j]['salary']['from']
-                            details.loc[i, 'salary.to [other]'] = data['Employment types'][i][j]['salary']['to']
                             details.loc[i, 'salary.currency [other]'] = data['Employment types'][i][j]['salary'][
                                 'currency']
+                            if details['salary.currency [other]'][i] != 'pln':
+                                try:
+                                    details.loc[i, 'salary.from [other]'] = data['Employment types'][i][j]['salary']['from']/currency_rates[str(details['salary.currency [other]'][i]).upper()]
+                                    details.loc[i, 'salary.to [other]'] = data['Employment types'][i][j]['salary']['to']/currency_rates[str(details['salary.currency [other]'][i]).upper()]
+                                except:
+                                    details.loc[i, 'salary.from [mandate]'] = data['Employment types'][i][j]['salary'][
+                                       'from']
+                                    details.loc[i, 'salary.to [mandate]'] = data['Employment types'][i][j]['salary']['to']
+                                    details.loc[i, 'currency check'] = 'unknown'
                     j += 1
 
                 # skills
@@ -242,8 +293,10 @@ class Transformer:
                     j += 1
                 i += 1
 
+            #data['Employment types']=data['Employment types list']
             data = pd.merge(data, details, how='inner', on=['Id jj.it', 'Published at'])
-            data = data.drop(['Employment types', 'Skills'], axis=1)
+            #data = data.drop(['Employment types list', 'Skills','Company Size'], axis=1)
+            data = data.drop(['Employment types', 'Skills', 'Company Size'], axis=1)
             if not pivot_data.empty:
                 if not recent_data.empty:
                     data = data.append(recent_data)
@@ -264,7 +317,6 @@ class Loader:
 
     def __init__(self, path='', google_path='', project_id='', full_table_id=''):
         print(datetime.now().strftime("%H:%M:%S") + ': Loader class initialized...')
-        from google.cloud import bigquery
         self.path = path
         os.chdir(path)
         os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = self.google_path = google_path
@@ -276,16 +328,16 @@ class Loader:
         data = pd.read_csv(self.path + '/final_data.csv', sep=',')
         data.columns = ['Title', 'Street', 'City', 'Country_code', 'Address_text', 'Marker_icon', 'Workplace_type',
                         'Company_name',
-                        'Company_url', 'Company_size', 'Experience_level', 'Latitude', 'Longitude', 'Published_at',
-                        'Remote_interview',
-                        'Id_jjit', 'Company_logo', 'Remote', 'Open_to_hire_Ukrainians', 'salary_from_permanent',
-                        'salary_to_permanent',
+                        'Company_url','Experience_level', 'Latitude', 'Longitude', 'Published_at',
+                        'Remote_interview', 'Id_jjit',
+                        'Company_logo', 'Remote', 'Open_to_hire_Ukrainians', 'Company_size_from',
+                        'Company_size_to','salary_from_permanent', 'salary_to_permanent',
                         'salary_currency_permanent', 'salary_from_b2b', 'salary_to_b2b', 'salary_currency_b2b',
                         'salary_from_mandate',
                         'salary_to_mandate', 'salary_currency_mandate', 'salary_from_other', 'salary_to_other',
                         'salary_currency_other',
                         'skills_name_0', 'skills_value_0', 'skills_name_1', 'skills_value_1', 'skills_name_2',
-                        'skills_value_2']
+                        'skills_value_2','currency_check']
         print(datetime.now().strftime("%H:%M:%S") + ': Loaded transformed final data into class')
         return data
 
