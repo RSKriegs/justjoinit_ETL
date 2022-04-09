@@ -353,7 +353,10 @@ class Transformer:
         if self.if_test == 'Y':
             data.to_csv('final_test_data.csv', index=False, encoding="utf-8")
         elif len(data.columns)==39:
-            data.to_csv('final_data.csv', index=False, encoding="utf-8")
+            if self.mode == 'replace':
+                data.to_csv('final_data.csv', index=False, encoding="utf-8")
+            elif self.mode == 'append':
+                data.to_csv('append_data.csv', index=False, encoding="utf-8")
         print(datetime.now().strftime("%H:%M:%S") + ': Transformed final data exported.')
 
 
@@ -370,7 +373,10 @@ class Loader:
         self.load_data_to_bigquery()
 
     def get_transformed_data(self):
-        data = pd.read_csv(self.path + '/final_data.csv', sep=',')
+        if self.mode == 'replace':
+            data = pd.read_csv(self.path + '/final_data.csv', sep=',')
+        elif self.mode == 'append':
+            data = pd.read_csv(self.path + '/append_data.csv', sep=',')
         data.columns = ['Title', 'Street', 'City', 'Country_code', 'Address_text', 'Marker_icon', 'Workplace_type',
                         'Company_name',
                         'Company_url','Experience_level', 'Latitude', 'Longitude', 'Published_at',
