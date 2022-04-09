@@ -465,6 +465,7 @@ if __name__ == '__main__':
         sys.exit()
     try:
         path = params['path']
+        mode = params['mode']
         check_file_permission(path, 'data.csv')
         check_file_permission(path, 'final_data.csv')
         check_file_permission(path, 'pivot_data.csv')
@@ -472,7 +473,6 @@ if __name__ == '__main__':
         extract = 'n' if params['extract'] == 'n' else 'Y'
         transform = 'n' if params['transform'] == 'n' else 'Y'
         load = 'n' if params['load'] == 'n' else 'Y'
-        mode = params['mode']
         google_path = params['google_path']
         project_id = params['project_id']
         full_table_id = params['table_id']
@@ -487,7 +487,7 @@ if __name__ == '__main__':
         if transform == 'Y':
             print(datetime.now().strftime("%H:%M:%S") + ': Starting data transformation... (it can take some time)')
             start_time = time.time()
-            transformer_instance = Transformer(path, is_test)
+            transformer_instance = Transformer(path,is_test,mode)
             end_time = time.time()
             print(datetime.now().strftime("%H:%M:%S") + ': Data transformation completed.')
             print(datetime.now().strftime("%H:%M:%S") + ': Data transformation lasted ' + str(
@@ -495,7 +495,7 @@ if __name__ == '__main__':
         if load == 'Y':
             print(datetime.now().strftime("%H:%M:%S") + ': Starting data load to BigQuery...')
             start_time = time.time()
-            loader_instance = Loader(path, google_path, project_id, full_table_id)
+            loader_instance = Loader(path, mode,google_path, project_id, full_table_id)
             end_time = time.time()
             print(datetime.now().strftime("%H:%M:%S") + ': Data load to BigQuery completed.')
             print(datetime.now().strftime("%H:%M:%S") + ': Data load to BigQuery lasted ' + str(
