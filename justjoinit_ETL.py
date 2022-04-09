@@ -330,15 +330,22 @@ class Transformer:
             #data = data.drop(['Employment types list', 'Skills','Company Size'], axis=1)
             data = data.drop(['Employment types', 'Skills', 'Company Size'], axis=1)
             #replacing nulls among sensitive columns - nulls could cause bugs in Data Studio
-            data[['salary.from [permanent]', 'salary.to [permanent]','salary.from [b2b]', 'salary.to [b2b]',
-                                            'salary.from [mandate]', 'salary.to [mandate]',
+            data[['salary.from [permanent]', 'salary.to [permanent]', 'salary.from [b2b]', 'salary.to [b2b]',
+                  'salary.from [mandate]', 'salary.to [mandate]',
+                  'salary.from [other]', 'salary.to [other]',
+                  'currency check', 'skills.value_0', 'skills.value_1',
+                  'skills.value_2', 'Company Size from',
+                  'Company Size to']]=data[['salary.from [permanent]', 'salary.to [permanent]','salary.from [b2b]',
+                                            'salary.to [b2b]', 'salary.from [mandate]', 'salary.to [mandate]',
                                              'salary.from [other]', 'salary.to [other]',
                                             'currency check','skills.value_0','skills.value_1',
                                             'skills.value_2','Company Size from',
-                                            'Company Size to']].fillna(0,inplace=True)
-            data[['salary.currency [permanent]','salary.currency [b2b]','salary.currency [mandate]',
-                                            'salary.currency [other]','skills.name_0','skills.name_1',
-                                            'skills.name_2']].fillna("None",inplace=True)
+                                            'Company Size to']].fillna(0)
+            data[['salary.currency [permanent]', 'salary.currency [b2b]', 'salary.currency [mandate]',
+                  'salary.currency [other]', 'skills.name_0', 'skills.name_1',
+                  'skills.name_2']]= data[['salary.currency [permanent]','salary.currency [b2b]',
+                                           'salary.currency [mandate]','salary.currency [other]','skills.name_0',
+                                           'skills.name_1','skills.name_2']].fillna("unknown")
             if not pivot_data.empty:
                 if self.mode == 'replace':
                     if not recent_data.empty:
