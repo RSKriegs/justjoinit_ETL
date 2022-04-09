@@ -131,9 +131,10 @@ class Extractor:
 
 class Transformer:
 
-    def __init__(self, path='', if_test='n'):
+    def __init__(self, path='', if_test='n',mode=''):
         print(datetime.now().strftime("%H:%M:%S") + ': Transformer class initialized...')
         self.path = path
+        self.mode = mode
         os.chdir(self.path)
         self.if_test = if_test
         self.export_transformed_data()
@@ -192,8 +193,10 @@ class Transformer:
                 data = data[0:0]
 
         if not data.empty:
+            #reconverting to json
             data['Employment types'] = data['Employment types'].apply(lambda x: eval(x))
             data['Skills'] = data['Skills'].apply(lambda x: eval(x))
+            #Company size
             data['Company Size'] = data['Company Size'].str.replace('-', 'STOP')
             data['Company Size'] = data['Company Size'].apply(lambda x: re.sub(r"[^a-zA-Z0-9]", "", str(x)))
             try:
@@ -207,6 +210,7 @@ class Transformer:
                                             'salary.currency [b2b]', 'salary.from [mandate]', 'salary.to [mandate]',
                                             'salary.currency [mandate]', 'salary.from [other]', 'salary.to [other]',
                                             'salary.currency [other]','currency check'])
+            #currency rates
             currency_rates = CurrencyRates().get_rates('PLN')
             i = 0
             while i < len(data):
@@ -228,11 +232,12 @@ class Transformer:
                                     ['from']/currency_rates[str(details['salary.currency [permanent]'][i]).upper()]
                                     details.loc[i, 'salary.to [permanent]'] = data['Employment types'][i][j]['salary']
                                     ['to']/currency_rates[str(details['salary.currency [permanent]'][i]).upper()]
+                                    details.loc[i, 'currency check'] = 'pass'
                                 except:
                                     details.loc[i, 'salary.from [permanent]'] = data['Employment types'][i][j]['salary'][
                                         'from']
                                     details.loc[i, 'salary.to [permanent]'] = data['Employment types'][i][j]['salary']['to']
-                                    details.loc[i, 'currency check'] = 'unknown'
+                                    details.loc[i, 'currency check'] = 'fail'
                             else:
                                 details.loc[i, 'salary.from [permanent]'] = data['Employment types'][i][j]['salary'][
                                     'from']
@@ -251,11 +256,12 @@ class Transformer:
                                     ['from']/currency_rates[str(details['salary.currency [b2b]'][i]).upper()]
                                     details.loc[i, 'salary.to [b2b]'] = data['Employment types'][i][j]['salary']
                                     ['to']/currency_rates[str(details['salary.currency [b2b]'][i]).upper()]
+                                    details.loc[i, 'currency check'] = 'pass'
                                 except:
                                     details.loc[i, 'salary.from [b2b]'] = data['Employment types'][i][j]['salary'][
                                         'from']
                                     details.loc[i, 'salary.to [b2b]'] = data['Employment types'][i][j]['salary']['to']
-                                    details.loc[i, 'currency check'] = 'unknown'
+                                    details.loc[i, 'currency check'] = 'fail'
                             else:
                                 details.loc[i, 'salary.from [b2b]'] = data['Employment types'][i][j]['salary'][
                                     'from']
@@ -274,11 +280,12 @@ class Transformer:
                                     ['from']/currency_rates[str(details['salary.currency [mandate]'][i]).upper()]
                                     details.loc[i, 'salary.to [mandate]'] = data['Employment types'][i][j]['salary']
                                     ['to']/currency_rates[str(details['salary.currency [mandate]'][i]).upper()]
+                                    details.loc[i, 'currency check'] = 'pass'
                                 except:
                                     details.loc[i, 'salary.from [mandate]'] = data['Employment types'][i][j]['salary'][
                                         'from']
                                     details.loc[i, 'salary.to [mandate]'] = data['Employment types'][i][j]['salary']['to']
-                                    details.loc[i, 'currency check'] = 'unknown'
+                                    details.loc[i, 'currency check'] = 'fail'
                             else:
                                 details.loc[i, 'salary.from [mandate]'] = data['Employment types'][i][j]['salary'][
                                     'from']
@@ -297,11 +304,12 @@ class Transformer:
                                     ['from']/currency_rates[str(details['salary.currency [other]'][i]).upper()]
                                     details.loc[i, 'salary.to [other]'] = data['Employment types'][i][j]['salary']
                                     ['to']/currency_rates[str(details['salary.currency [other]'][i]).upper()]
+                                    details.loc[i, 'currency check'] = 'pass'
                                 except:
                                     details.loc[i, 'salary.from [mandate]'] = data['Employment types'][i][j]['salary'][
                                        'from']
                                     details.loc[i, 'salary.to [mandate]'] = data['Employment types'][i][j]['salary']['to']
-                                    details.loc[i, 'currency check'] = 'unknown'
+                                    details.loc[i, 'currency check'] = 'fail'
                             else:
                                 details.loc[i, 'salary.from [other]'] = data['Employment types'][i][j]['salary'][
                                     'from']
@@ -321,9 +329,21 @@ class Transformer:
             data = pd.merge(data, details, how='inner', on=['Id jj.it', 'Published at'])
             #data = data.drop(['Employment types list', 'Skills','Company Size'], axis=1)
             data = data.drop(['Employment types', 'Skills', 'Company Size'], axis=1)
+            #replacing nulls among sensitive columns - nulls could cause bugs in Data Studio
+            data[['salary.from [permanent]', 'salary.to [permanent]','salary.from [b2b]', 'salary.to [b2b]',
+                                            'salary.from [mandate]', 'salary.to [mandate]',
+                                             'salary.from [other]', 'salary.to [other]',
+                                            'currency check','skills.value_0','skills.value_1',
+                                            'skills.value_2','Company Size from',
+                                            'Company Size to']].fillna(0,inplace=True)
+            data[['salary.currency [permanent]','salary.currency [b2b]','salary.currency [mandate]',
+                                            'salary.currency [other]','skills.name_0','skills.name_1',
+                                            'skills.name_2']].fillna("None",inplace=True)
             if not pivot_data.empty:
-                if not recent_data.empty:
-                    data = data.append(recent_data)
+                if self.mode == 'replace':
+                    if not recent_data.empty:
+                        data = data.append(recent_data)
+
         print(datetime.now().strftime("%H:%M:%S") + ': Data transformed:')
         print(data)
         return data
@@ -339,9 +359,10 @@ class Transformer:
 
 class Loader:
 
-    def __init__(self, path='', google_path='', project_id='', full_table_id=''):
+    def __init__(self, path='', mode = '',google_path='', project_id='', full_table_id=''):
         print(datetime.now().strftime("%H:%M:%S") + ': Loader class initialized...')
         self.path = path
+        self.mode = mode
         os.chdir(path)
         os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = self.google_path = google_path
         self.project_id = project_id
@@ -369,7 +390,12 @@ class Loader:
         data = self.get_transformed_data()
         data['Open_to_hire_Ukrainians'] = data['Open_to_hire_Ukrainians'].astype(
             "string")  # for some reason it didn't work with default boolean type
-        data.to_gbq(self.full_table_id, project_id=self.project_id, if_exists='replace')
+        if self.mode=='replace':
+            data.to_gbq(self.full_table_id, project_id=self.project_id, if_exists='replace')
+        elif self.mode=='append':
+            data.to_gbq(self.full_table_id, project_id=self.project_id, if_exists='append')
+        else:
+            print(datetime.now().strftime("%H:%M:%S") + ': Error: invalid mode name provided')
         print(datetime.now().strftime("%H:%M:%S") + ': Transformed final data should be loaded into BigQuery')
 
 
@@ -406,6 +432,10 @@ if __name__ == '__main__':
                         help="do you want to transform data for an appropriate dataset used in dashboard? [Y/n]")
     parser.add_argument('--load', type=str, default='n',
                         help="do you want to load data into Google BigQuery? [Y/n]")
+    parser.add_argument('--mode', type=str, default='replace',
+                        help="Do you want to replace the existing table or append new data? [Replace/append]"+
+                        " It doesn't matter which you choose if the table doesn't exist. Note that impacts"+
+                        " both the data load but also transforming")
     parser.add_argument('--google_path', type=str,
                         help="Enter a Google credentials environment path. Required for loading into BigQuery")
     parser.add_argument('--project_id', type=str,
@@ -442,6 +472,7 @@ if __name__ == '__main__':
         extract = 'n' if params['extract'] == 'n' else 'Y'
         transform = 'n' if params['transform'] == 'n' else 'Y'
         load = 'n' if params['load'] == 'n' else 'Y'
+        mode = params['mode']
         google_path = params['google_path']
         project_id = params['project_id']
         full_table_id = params['table_id']
