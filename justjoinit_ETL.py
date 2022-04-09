@@ -205,10 +205,10 @@ class Transformer:
                 data[['Company Size from']]=data['Company Size']
                 data[['Company Size to']]=None
             #data['Employment types list'] = ''
-            details = pd.DataFrame(columns=['Id jj.it', 'salary.from [permanent]', 'salary.to [permanent]',
-                                            'salary.currency [permanent]', 'salary.from [b2b]', 'salary.to [b2b]',
-                                            'salary.currency [b2b]', 'salary.from [mandate]', 'salary.to [mandate]',
-                                            'salary.currency [mandate]', 'salary.from [other]', 'salary.to [other]',
+            details = pd.DataFrame(columns=['Id jj.it', 'if_permanent','salary.from [permanent]', 'salary.to [permanent]',
+                                            'salary.currency [permanent]', 'if_b2b','salary.from [b2b]', 'salary.to [b2b]',
+                                            'salary.currency [b2b]', 'if_mandate','salary.from [mandate]', 'salary.to [mandate]',
+                                            'salary.currency [mandate]', 'if_other','salary.from [other]', 'salary.to [other]',
                                             'salary.currency [other]','currency check'])
             #currency rates
             currency_rates = CurrencyRates().get_rates('PLN')
@@ -222,6 +222,7 @@ class Transformer:
                 len_record = len(data['Employment types'][i])
                 while j < len_record:
                     if data['Employment types'][i][j]['type'] == 'permanent':
+                        details.loc[i,'if_permanent']=True
                         #data['Employment types list'][i] = 'permanent'
                         if data['Employment types'][i][j]['salary'] != None:
                             details.loc[i, 'salary.currency [permanent]'] = data['Employment types'][i][j]['salary'][
@@ -243,6 +244,7 @@ class Transformer:
                                     'from']
                                 details.loc[i, 'salary.to [permanent]'] = data['Employment types'][i][j]['salary']['to']
                     elif data['Employment types'][i][j]['type'] == 'b2b':
+                        details.loc[i, 'if_b2b'] = True
                         #if data['Employment types list'][i] == '':
                         #    data['Employment types list'][i] = 'b2b'
                         #else:
@@ -267,6 +269,7 @@ class Transformer:
                                     'from']
                                 details.loc[i, 'salary.to [b2b]'] = data['Employment types'][i][j]['salary']['to']
                     elif data['Employment types'][i][j]['type'] == 'mandate_contract':
+                        details.loc[i, 'if_mandate'] = True
                         #if data['Employment types list'][i] == '':
                         #    data['Employment types list'][i] = 'mandate'
                         #else:
@@ -291,6 +294,7 @@ class Transformer:
                                     'from']
                                 details.loc[i, 'salary.to [mandate]'] = data['Employment types'][i][j]['salary']['to']
                     else:
+                        details.loc[i, 'if_other'] = True
                         #if data['Employment types list'][i] == '':
                         #    data['Employment types list'][i] = 'other'
                         #else:
@@ -345,7 +349,9 @@ class Transformer:
                   'salary.currency [other]', 'skills.name_0', 'skills.name_1',
                   'skills.name_2']]= data[['salary.currency [permanent]','salary.currency [b2b]',
                                            'salary.currency [mandate]','salary.currency [other]','skills.name_0',
-                                           'skills.name_1','skills.name_2']].fillna("unknown")
+                                           'skills.name_1','skills.name_2']].fillna('unknown')
+            data[['if_permanent','if_b2b','if_mandate','if_other']]=data[['if_permanent','if_b2b','if_mandate',
+                                                                          'if_other']].fillna(False).astype(str)
             if not pivot_data.empty:
                 if self.mode == 'replace':
                     if not recent_data.empty:
@@ -359,7 +365,7 @@ class Transformer:
         data = self.transform_data()
         if self.if_test == 'Y':
             data.to_csv('final_test_data.csv', index=False, encoding="utf-8")
-        elif len(data.columns)==39:
+        elif len(data.columns)==43:
             if self.mode == 'replace':
                 data.to_csv('final_data.csv', index=False, encoding="utf-8")
             elif self.mode == 'append':
@@ -389,11 +395,11 @@ class Loader:
                         'Company_url','Experience_level', 'Latitude', 'Longitude', 'Published_at',
                         'Remote_interview', 'Id_jjit',
                         'Company_logo', 'Remote', 'Open_to_hire_Ukrainians', 'Company_size_from',
-                        'Company_size_to','salary_from_permanent', 'salary_to_permanent',
-                        'salary_currency_permanent', 'salary_from_b2b', 'salary_to_b2b', 'salary_currency_b2b',
-                        'salary_from_mandate',
-                        'salary_to_mandate', 'salary_currency_mandate', 'salary_from_other', 'salary_to_other',
-                        'salary_currency_other', 'currency_check',
+                        'Company_size_to','if_permanent','salary_from_permanent', 'salary_to_permanent',
+                        'salary_currency_permanent', 'if_b2b','salary_from_b2b', 'salary_to_b2b', 'salary_currency_b2b',
+                        'if_mandate','salary_from_mandate',
+                        'salary_to_mandate', 'salary_currency_mandate', 'if_other', 'salary_from_other',
+                        'salary_to_other','salary_currency_other', 'currency_check',
                         'skills_name_0', 'skills_value_0', 'skills_name_1', 'skills_value_1', 'skills_name_2',
                         'skills_value_2']
         print(datetime.now().strftime("%H:%M:%S") + ': Loaded transformed final data into class')
