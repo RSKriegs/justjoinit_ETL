@@ -98,16 +98,14 @@ class Extractor:
         df = pd.concat([df, actual_data])
         df['Employment types'] = df['Employment types'].astype(str)
         df['Skills'] = df['Skills'].astype(str)
-        df = df.drop_duplicates(subset=['Id jj.it',
-                                        'Published at'])
+        df = df.drop_duplicates(subset=['Id jj.it'])
         print(datetime.now().strftime("%H:%M:%S") + ': Dropped duplicates')
         # data below will be used later to optimize transformation time (to apply transformation
         # only for new rows). The program exports it so it can be used for transformation later as well.
         # pivot_data = df[~df['Id jj.it','Published at'].isin(data['Id jj.it','Published at'])]
         # pivot_data = pd.merge(df,actual_data,how='outer',on=['Id jj.it','Published at']).query('_merge != "left"')
-        pivot_data = df.append(actual_data).drop_duplicates(subset=['Id jj.it',
-                                                                    'Published at'], keep=False)
-        pivot_data[['Id jj.it', 'Published at']].to_csv(self.path + '/pivot_data.csv')
+        pivot_data = df.append(actual_data).drop_duplicates(subset=['Id jj.it'], keep=False)
+        pivot_data[['Id jj.it']].to_csv(self.path + '/pivot_data.csv')
         print(datetime.now().strftime("%H:%M:%S") + ': Exported pivot data')
         return df
 
@@ -209,7 +207,7 @@ class Transformer:
                                             'salary.currency [permanent]', 'if_b2b','salary.from [b2b]', 'salary.to [b2b]',
                                             'salary.currency [b2b]', 'if_mandate','salary.from [mandate]', 'salary.to [mandate]',
                                             'salary.currency [mandate]', 'if_other','salary.from [other]', 'salary.to [other]',
-                                            'salary.currency [other]','currency check'])
+                                            'salary.currency [other]','currency_exchange_rate'])
             #currency rates
             currency_rates = CurrencyRates().get_rates('PLN')
             i = 0
@@ -229,16 +227,15 @@ class Transformer:
                                 'currency']
                             if details['salary.currency [permanent]'][i]!='pln':
                                 try:
-                                    details.loc[i, 'salary.from [permanent]'] = data['Employment types'][i][j]['salary']
-                                    ['from']/currency_rates[str(details['salary.currency [permanent]'][i]).upper()]
-                                    details.loc[i, 'salary.to [permanent]'] = data['Employment types'][i][j]['salary']
-                                    ['to']/currency_rates[str(details['salary.currency [permanent]'][i]).upper()]
-                                    details.loc[i, 'currency check'] = 'pass'
+                                    currency_rate = currency_rates.get(str(details['salary.currency [permanent]'].values[i]).upper())
+                                    details.loc[i, 'salary.from [permanent]'] = data['Employment types'][i][j]['salary']['from']/currency_rate
+                                    details.loc[i, 'salary.to [permanent]'] = data['Employment types'][i][j]['salary']['to']/currency_rate
+                                    details.loc[i, 'currency_exchange_rate'] = currency_rate
                                 except:
                                     details.loc[i, 'salary.from [permanent]'] = data['Employment types'][i][j]['salary'][
                                         'from']
                                     details.loc[i, 'salary.to [permanent]'] = data['Employment types'][i][j]['salary']['to']
-                                    details.loc[i, 'currency check'] = 'fail'
+                                    details.loc[i, 'currency_exchange_rate'] = 0
                             else:
                                 details.loc[i, 'salary.from [permanent]'] = data['Employment types'][i][j]['salary'][
                                     'from']
@@ -254,16 +251,15 @@ class Transformer:
                                 'currency']
                             if details['salary.currency [b2b]'][i] != 'pln':
                                 try:
-                                    details.loc[i, 'salary.from [b2b]'] = data['Employment types'][i][j]['salary']
-                                    ['from']/currency_rates[str(details['salary.currency [b2b]'][i]).upper()]
-                                    details.loc[i, 'salary.to [b2b]'] = data['Employment types'][i][j]['salary']
-                                    ['to']/currency_rates[str(details['salary.currency [b2b]'][i]).upper()]
-                                    details.loc[i, 'currency check'] = 'pass'
+                                    currency_rate = currency_rates.get(str(details['salary.currency [b2b]'].values[i]).upper())
+                                    details.loc[i, 'salary.from [b2b]'] = data['Employment types'][i][j]['salary']['from']/currency_rate
+                                    details.loc[i, 'salary.to [b2b]'] = data['Employment types'][i][j]['salary']['to']/currency_rate
+                                    details.loc[i, 'currency_exchange_rate'] = currency_rate
                                 except:
                                     details.loc[i, 'salary.from [b2b]'] = data['Employment types'][i][j]['salary'][
                                         'from']
                                     details.loc[i, 'salary.to [b2b]'] = data['Employment types'][i][j]['salary']['to']
-                                    details.loc[i, 'currency check'] = 'fail'
+                                    details.loc[i, 'currency_exchange_rate'] = 0
                             else:
                                 details.loc[i, 'salary.from [b2b]'] = data['Employment types'][i][j]['salary'][
                                     'from']
@@ -279,16 +275,16 @@ class Transformer:
                                 'currency']
                             if details['salary.currency [mandate]'][i] != 'pln':
                                 try:
-                                    details.loc[i, 'salary.from [mandate]'] = data['Employment types'][i][j]['salary']
-                                    ['from']/currency_rates[str(details['salary.currency [mandate]'][i]).upper()]
-                                    details.loc[i, 'salary.to [mandate]'] = data['Employment types'][i][j]['salary']
-                                    ['to']/currency_rates[str(details['salary.currency [mandate]'][i]).upper()]
-                                    details.loc[i, 'currency check'] = 'pass'
+                                    currency_rate = currency_rates.get(
+                                        str(details['salary.currency [mandate]'].values[i]).upper())
+                                    details.loc[i, 'salary.from [mandate]'] = data['Employment types'][i][j]['salary']['from']/currency_rate
+                                    details.loc[i, 'salary.to [mandate]'] = data['Employment types'][i][j]['salary']['to']/currency_rate
+                                    details.loc[i, 'currency_exchange_rate'] = currency_rate
                                 except:
                                     details.loc[i, 'salary.from [mandate]'] = data['Employment types'][i][j]['salary'][
                                         'from']
                                     details.loc[i, 'salary.to [mandate]'] = data['Employment types'][i][j]['salary']['to']
-                                    details.loc[i, 'currency check'] = 'fail'
+                                    details.loc[i, 'currency_exchange_rate'] = 0
                             else:
                                 details.loc[i, 'salary.from [mandate]'] = data['Employment types'][i][j]['salary'][
                                     'from']
@@ -304,16 +300,16 @@ class Transformer:
                                 'currency']
                             if details['salary.currency [other]'][i] != 'pln':
                                 try:
-                                    details.loc[i, 'salary.from [other]'] = data['Employment types'][i][j]['salary']
-                                    ['from']/currency_rates[str(details['salary.currency [other]'][i]).upper()]
-                                    details.loc[i, 'salary.to [other]'] = data['Employment types'][i][j]['salary']
-                                    ['to']/currency_rates[str(details['salary.currency [other]'][i]).upper()]
-                                    details.loc[i, 'currency check'] = 'pass'
+                                    currency_rate = currency_rates.get(
+                                        str(details['salary.currency [other]'].values[i]).upper())
+                                    details.loc[i, 'salary.from [other]'] = data['Employment types'][i][j]['salary']['from']/currency_rate
+                                    details.loc[i, 'salary.to [other]'] = data['Employment types'][i][j]['salary']['to']/currency_rate
+                                    details.loc[i, 'currency_exchange_rate'] = currency_rate
                                 except:
                                     details.loc[i, 'salary.from [mandate]'] = data['Employment types'][i][j]['salary'][
                                        'from']
                                     details.loc[i, 'salary.to [mandate]'] = data['Employment types'][i][j]['salary']['to']
-                                    details.loc[i, 'currency check'] = 'fail'
+                                    details.loc[i, 'currency_exchange_rate'] = 0
                             else:
                                 details.loc[i, 'salary.from [other]'] = data['Employment types'][i][j]['salary'][
                                     'from']
@@ -337,12 +333,12 @@ class Transformer:
             data[['salary.from [permanent]', 'salary.to [permanent]', 'salary.from [b2b]', 'salary.to [b2b]',
                   'salary.from [mandate]', 'salary.to [mandate]',
                   'salary.from [other]', 'salary.to [other]',
-                  'currency check', 'skills.value_0', 'skills.value_1',
+                  'currency_exchange_rate', 'skills.value_0', 'skills.value_1',
                   'skills.value_2', 'Company Size from',
                   'Company Size to']]=data[['salary.from [permanent]', 'salary.to [permanent]','salary.from [b2b]',
                                             'salary.to [b2b]', 'salary.from [mandate]', 'salary.to [mandate]',
                                              'salary.from [other]', 'salary.to [other]',
-                                            'currency check','skills.value_0','skills.value_1',
+                                            'currency_exchange_rate','skills.value_0','skills.value_1',
                                             'skills.value_2','Company Size from',
                                             'Company Size to']].fillna(0)
             data[['salary.currency [permanent]', 'salary.currency [b2b]', 'salary.currency [mandate]',
@@ -399,7 +395,7 @@ class Loader:
                         'salary_currency_permanent', 'if_b2b','salary_from_b2b', 'salary_to_b2b', 'salary_currency_b2b',
                         'if_mandate','salary_from_mandate',
                         'salary_to_mandate', 'salary_currency_mandate', 'if_other', 'salary_from_other',
-                        'salary_to_other','salary_currency_other', 'currency_check',
+                        'salary_to_other','salary_currency_other', 'currency_exchange_rate',
                         'skills_name_0', 'skills_value_0', 'skills_name_1', 'skills_value_1', 'skills_name_2',
                         'skills_value_2']
         print(datetime.now().strftime("%H:%M:%S") + ': Loaded transformed final data into class')
