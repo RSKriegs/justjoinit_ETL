@@ -147,7 +147,7 @@ class Transformer:
 
     def get_extracted_pivot_data(self):
         try:
-            pivot_data = pd.read_csv(self.path + '/pivot_data.csv', sep=',', usecols=['Id jj.it', 'Published at'])
+            pivot_data = pd.read_csv(self.path + '/pivot_data.csv', sep=',', usecols=['Id jj.it'])
             print(datetime.now().strftime("%H:%M:%S") + ': Loaded pivot data')
         except:
             pivot_data = pd.DataFrame()
