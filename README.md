@@ -7,7 +7,7 @@ wouldn't require billing data (as GCP services do)
 
 As for now, the ETL drops duplicates basing solely on justjoin.it ID provided in API, but I have suspicions that in a future the new offers could replace the ones
 published a long time ago (let's say, 3 months or so) - ergo, those ID's might not be unique. But we also don't want to subset the publishing date in removal process
-as the offers data tends to change too often.
+as the offers data tends to change too often, with publishing date being overwritten.
 - Implementing and integrating web scrapers.
 
 The justjoin.it does not provide all the data. I can especially think of skills data, which could have up to 12 fields on a job ad rather than 3, and also of advert's
