@@ -186,7 +186,7 @@ class Transformer:
 
         if not recent_data.empty:
             if not pivot_data.empty:
-                data = pd.merge(data, pivot_data, how='inner', on=['Id jj.it', 'Published at'])
+                data = pd.merge(data, pivot_data, how='inner', on=['Id jj.it'])
             else:
                 data = data[0:0]
 
@@ -213,7 +213,7 @@ class Transformer:
             i = 0
             while i < len(data):
                 details.loc[i, 'Id jj.it'] = data['Id jj.it'][i]
-                details.loc[i, 'Published at'] = data['Published at'][i]
+                #details.loc[i, 'Published at'] = data['Published at'][i]
 
                 # employment
                 j = 0
@@ -326,7 +326,7 @@ class Transformer:
                 i += 1
 
             #data['Employment types']=data['Employment types list']
-            data = pd.merge(data, details, how='inner', on=['Id jj.it', 'Published at'])
+            data = pd.merge(data, details, how='inner', on=['Id jj.it'])
             #data = data.drop(['Employment types list', 'Skills','Company Size'], axis=1)
             data = data.drop(['Employment types', 'Skills', 'Company Size'], axis=1)
             #replacing nulls among sensitive columns - nulls could cause bugs in Data Studio
@@ -405,6 +405,10 @@ class Loader:
         data = self.get_transformed_data()
         data['Open_to_hire_Ukrainians'] = data['Open_to_hire_Ukrainians'].astype(
             "string")  # for some reason it didn't work with default boolean type
+        data['Company_size_from'] = data['Company_size_from'].astype('string') #temporary fix - will fix it
+                                                                                #with more time provided
+        data['Company_size_to'] = data['Company_size_to'].astype('string') #temporary fix - will fix it
+                                                                                #with more time provided
         if self.mode=='replace':
             data.to_gbq(self.full_table_id, project_id=self.project_id, if_exists='replace')
         elif self.mode=='append':
