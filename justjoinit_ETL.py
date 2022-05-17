@@ -13,11 +13,10 @@ from google.cloud import bigquery
 
 class Extractor:
 
-    def __init__(self, path='', if_test='n'):
+    def __init__(self, path=''):
         print(datetime.now().strftime("%H:%M:%S") + ': Extractor class initialized...')
         self.path = path
         os.chdir(self.path)
-        self.if_test = if_test
         self.get_jjit_data()
         self.export_dataframe()
 
@@ -83,10 +82,7 @@ class Extractor:
                                    'Remote',
                                    'Open to hire Ukrainians'])
         print(datetime.now().strftime("%H:%M:%S") + ': Dataframe created')
-        if self.if_test == 'Y':
-            return df.iloc[0]
-        else:
-            return df
+        return df
 
     def merge_dataframe_and_remove_duplicates(self):
         df = self.create_dataframe()
@@ -113,10 +109,7 @@ class Extractor:
         # all time
         df = self.merge_dataframe_and_remove_duplicates()
         print(df)
-        if self.if_test == 'Y':
-            filename = 'test_data.csv'
-        else:
-            filename = 'data.csv'
+        filename = 'data.csv'
         df.to_csv(filename, index=False, encoding="utf-8")
         print(datetime.now().strftime("%H:%M:%S") + ': Exported actual data')
         # daily
@@ -129,19 +122,15 @@ class Extractor:
 
 class Transformer:
 
-    def __init__(self, path='', if_test='n',mode=''):
+    def __init__(self, path='',mode=''):
         print(datetime.now().strftime("%H:%M:%S") + ': Transformer class initialized...')
         self.path = path
         self.mode = mode
         os.chdir(self.path)
-        self.if_test = if_test
         self.export_transformed_data()
 
     def get_extracted_data(self):
-        if self.if_test == 'Y':
-            data = pd.read_csv(self.path + '/test_data.csv', sep=',')
-        else:
-            data = pd.read_csv(self.path + '/data.csv', sep=',')
+        data = pd.read_csv(self.path + '/data.csv', sep=',')
         print(datetime.now().strftime("%H:%M:%S") + ': Loaded extracted data')
         return data
 
@@ -157,21 +146,12 @@ class Transformer:
         return pivot_data
 
     def get_extracted_recent_transformation_data(self):
-        if self.if_test == 'Y':
-            try:
-                recent_data = pd.read_csv(self.path + '/final_test_data.csv', sep=',')
-                print(datetime.now().strftime("%H:%M:%S") + ': Loaded transformed data')
-            except:
-                recent_data = pd.DataFrame()
-                print(datetime.now().strftime(
-                    "%H:%M:%S") + ': No recent transformed data found. Proceeding with empty dataframe')
-        else:
-            try:
-                recent_data = pd.read_csv(self.path + '/final_data.csv', sep=',')
-                print(datetime.now().strftime("%H:%M:%S") + ': Loaded transformed data')
-            except:
-                recent_data = pd.DataFrame()
-                print(datetime.now().strftime(
+        try:
+            recent_data = pd.read_csv(self.path + '/final_data.csv', sep=',')
+            print(datetime.now().strftime("%H:%M:%S") + ': Loaded transformed data')
+        except:
+            recent_data = pd.DataFrame()
+            print(datetime.now().strftime(
                     "%H:%M:%S") + ': No recent transformed data found. Proceeding with empty dataframe')
         print('Recent data: ')
         print(recent_data)
@@ -359,9 +339,7 @@ class Transformer:
 
     def export_transformed_data(self):
         data = self.transform_data()
-        if self.if_test == 'Y':
-            data.to_csv('final_test_data.csv', index=False, encoding="utf-8")
-        elif len(data.columns)==43:
+        if len(data.columns)==43:
             if self.mode == 'replace':
                 data.to_csv('final_data.csv', index=False, encoding="utf-8")
             elif self.mode == 'append':
@@ -444,7 +422,7 @@ if __name__ == '__main__':
                         help="Enter a file path. Required unconditionally")
     parser.add_argument('--test', type=str, default='n',
                         help="do you want to test the program? [Y/n] If yes, only one record within a data frame will" +
-                             " be created. Warning: testing won't work with loading into BigQuery.")
+                             " be created. WARNING: 1. Unavailable as for now. 2. testing won't work with loading into BigQuery.")
     parser.add_argument('--extract', type=str, default='Y',
                         help="do you want to extract data from API? [Y/n]")
     parser.add_argument('--transform', type=str, default='Y',
@@ -488,7 +466,7 @@ if __name__ == '__main__':
         check_file_permission(path, 'data.csv')
         check_file_permission(path, 'final_data.csv')
         check_file_permission(path, 'pivot_data.csv')
-        is_test = 'n' if params['test'] == 'n' else 'Y'
+        #is_test = 'n' if params['test'] == 'n' else 'Y'
         extract = 'n' if params['extract'] == 'n' else 'Y'
         transform = 'n' if params['transform'] == 'n' else 'Y'
         load = 'n' if params['load'] == 'n' else 'Y'
@@ -498,7 +476,7 @@ if __name__ == '__main__':
         if extract == 'Y':
             print(datetime.now().strftime("%H:%M:%S") + ': Starting data extraction...')
             start_time = time.time()
-            extractor_instance = Extractor(path, is_test)
+            extractor_instance = Extractor(path)
             end_time = time.time()
             print(datetime.now().strftime("%H:%M:%S") + ': Data extraction completed.')
             print(datetime.now().strftime("%H:%M:%S") + ': Data extraction lasted ' + str(
@@ -506,7 +484,7 @@ if __name__ == '__main__':
         if transform == 'Y':
             print(datetime.now().strftime("%H:%M:%S") + ': Starting data transformation... (it can take some time)')
             start_time = time.time()
-            transformer_instance = Transformer(path,is_test,mode)
+            transformer_instance = Transformer(path,mode)
             end_time = time.time()
             print(datetime.now().strftime("%H:%M:%S") + ': Data transformation completed.')
             print(datetime.now().strftime("%H:%M:%S") + ': Data transformation lasted ' + str(
