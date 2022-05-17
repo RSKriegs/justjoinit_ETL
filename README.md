@@ -11,7 +11,7 @@ This is how a dashboard looks like, as for 17th May 2022:
 
 Some manual tips regarding a dashboard:
 - the salary range slider might not come handy at first due to the fact that there are some records with salary being over 100k PLN. That's the issue but I haven't got time to think about it. Try to filter out some records to be able to specify a more detailed salary range.
-- salary-wise, all of the salaries are valued in PLN. If there are any offerings in other currencies, they are automatically converted into a PLN with a current rate at the time of appending the deduplicated record into a dataset (with a help of forex_python package).
+- salary-wise, all of the salaries are valued in PLN. If there are any offerings in other currencies, they are automatically converted into a PLN with a current rate at the time of appending the deduplicated record into a dataset (with a help of forex_python package). The 'expected salary' metric on a graph is a mean of lower and upper ranges of salary range, for all mentioned employment types.
 - the 'Job Title', 'Company' and 'Skills' searchbars filter if a given record contains an entered phrase. Data Studio also comes with a possibility of applying advanced search bars, with which you could also apply regular expressions, but that option seemed quite buggy.
 - speaking about 'Skills' searchbar, Skills are gathered into a list. if you want to mark the beginning and end of the phrase, remember about placing a ',' separator. For example, if you want to search after specifically Java skill, write 'Java,', otherwise you'll get results for Javascript and the others as well :)
 
