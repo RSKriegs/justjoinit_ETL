@@ -15,6 +15,10 @@ Some manual tips regarding a dashboard:
 - the 'Job Title', 'Company' and 'Skills' searchbars filter if a given record contains an entered phrase. Data Studio also comes with a possibility of applying advanced search bars, with which you could also apply regular expressions, but that option seemed quite buggy.
 - speaking about 'Skills' searchbar, Skills are gathered into a list. if you want to mark the beginning and end of the phrase, remember about placing a ',' separator. For example, if you want to search after specifically Java skill, write 'Java,', otherwise you'll get results for Javascript and the others as well :)
 
+If you want to run an ETL script, look into a code in Powershell scripts to find about a logic. First you'll need to install and configure Python virtual environment along with dependencies, then you can run a script. For more instructions, run a command:
+
+python justjoinit_ETL.py --help
+
 Features to be added:
 
 - Deployment of ETL in a cloud.
