@@ -33,6 +33,7 @@ It should be possible to implement that in Cloud Functions, or even Airflow/Comp
 As for now, the ETL drops duplicates basing solely on justjoin.it ID provided in API, but I have suspicions that in a future the new offers could replace the ones
 published a long time ago (let's say, 3 months or so) - ergo, those ID's might not be unique. But we also don't want to subset the publishing date in removal process
 as the offers data tends to change too often, with publishing date being overwritten.
+Update 23.05.2022: I've just noticed some changes in offers policy - namely speaking, offers containing multiple locations are displayed as a single offer at justjoin.it website, but they are displayed separately in API. That might cause some skew in a data, although the number of such offers is low. It is to be considered in future development.
 
 - Implementing and integrating web scrapers.
 
