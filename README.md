@@ -42,3 +42,7 @@ The justjoin.it API does not provide all the data. I can especially think of ski
 - More advanced testing.
 
 Honestly - haven't got more time for that recently, and I haven't got any issues with a script as for now.
+
+- Rewriting the script to be run within Docker's image, with adding tools such as Airflow, or Spark.
+
+That would be cool, although I think that this is the overkill for the data of that size :)
