@@ -46,3 +46,7 @@ Honestly - haven't got more time for that recently, and I haven't got any issues
 - Rewriting the script to be run within Docker's image, with adding tools such as Airflow, or Spark.
 
 That would be cool, although I think that this is the overkill for the data of that size :)
+
+- Optimization of pipeline.
+
+My current solution iterates through Pandas dataframe which is an anti-pattern. However, the runtime was tolerable and I desired better control over my code as I needed to apply nested logic for each selected row. Retrospectively, I would improve it, but I haven't got time for it as for now. I would try to apply either raw Python data structures if possible rather than Pandas dataframe or apply vertical transformations on given columns.
