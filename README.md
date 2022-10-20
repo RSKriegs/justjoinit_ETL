@@ -1,3 +1,5 @@
+UPDATE 20.10.2022: As I've changed my main computer - and do not want to stage the process on it - the data loads will be irregular. If I manage to find some spare time, I will try to migrate the process into a cloud.
+
 This is an ETL that extracts data from justjoin.it (a Polish IT jobboard) website API into local machine, transforms it locally, and loads into Google BigQuery. The dataset from BigQuery fuels the Google Data Studio dashboard below (which is up to the further development - there is one simple page as for now):
 
 https://datastudio.google.com/reporting/aff55800-36a9-45a0-b1ee-c88c193a0a92
