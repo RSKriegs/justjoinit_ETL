@@ -52,3 +52,7 @@ That would be cool, although I think that this is the overkill for the data of t
 - Optimization of pipeline.
 
 My current solution iterates through Pandas dataframe which is an anti-pattern. However, the runtime was tolerable and I desired better control over my code as I needed to apply nested logic for each selected row. Retrospectively, I would improve it, but I haven't got time for it as for now. I would try to apply either raw Python data structures if possible rather than Pandas dataframe or apply vertical transformations on given columns.
+
+- Implementing SCDs/immutability of data.
+
+I did not consider it while developing a solution - due to that there are some issues with time series analysis for each advert (it includes the latest timestamp for each event rather than the earliest - and some job postings are retained for a long time).
