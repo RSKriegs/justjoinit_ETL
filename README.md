@@ -10,6 +10,8 @@ https://datastudio.google.com/reporting/aff55800-36a9-45a0-b1ee-c88c193a0a92 (wi
 It should be visible to anybody on the internet. If not, try to log into your free Google account.
 As for now, the data range starts from February 2022. The script is scheduled on my local machine (sample script in Powershell that triggers the ETL is included in a repo) and is turned on everytime I run it. 
 
+(NOTE: BigQuery table expiration date without free tier is 60 days. If above dashboards won't work properly, it might have occured due to table expiration)
+
 This is how one of dashboards looks like, as for 17th May 2022:
 
 ![image](https://user-images.githubusercontent.com/75480707/168835022-cd8f87de-9fe6-497f-9afb-dca8d9dd8702.png)
