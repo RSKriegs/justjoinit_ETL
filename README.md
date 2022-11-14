@@ -12,7 +12,7 @@ As for now, the data range starts from February 2022. The script is scheduled on
 
 This is how one of dashboards looks like, as for 17th May 2022:
 
-![image](https://user-images.githubusercontent.com/75480707/201735744-35187344-2509-4620-9d03-8f84dd8a977d.png)
+![image](https://user-images.githubusercontent.com/75480707/201735832-9f6da057-c229-434d-9a4f-220bf7e64177.png)
 
 Some manual tips regarding a dashboard:
 - the salary range slider might not come handy at first due to the fact that there are some records with salary being over 100k PLN. That's the issue but I haven't got time to think about it. Try to filter out some records to be able to specify a more detailed salary range.
