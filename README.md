@@ -23,6 +23,25 @@ Some manual tips regarding a dashboard:
 
 If you want to get more info regarding how I handled deduplication, look into /dbt files. I also included two views that I used for some visualizations in dashboards (I have joined these views with original table on dashboards). On Looker Studio, I also created 2 custom metrics - one is "expected_salary", which is simply an average of all proposed salaries for given offer (those could vary if they proposed multiple employment options), and "company_size_groups", where I group companies based on their size as given in job adverts.
 
+Sample interesting insights, specifically for data engineers:
+![Image](https://user-images.githubusercontent.com/75480707/201771367-d5e2e059-7307-43c3-8adf-953276be30fe.png)
+
+Median expected salary for data engineer (all levels) as per job adverts is ~20.5k PLN (~4.5K USD) monthly. Almost 3/4 of adverts are fully remote and contain salary range.
+
+![image](https://user-images.githubusercontent.com/75480707/201771425-07b136d9-7175-4c74-b6e1-849543d54508.png)
+
+Most demanded skills - crucial for roles - are Python & SQL. Spark slightly wins a battle with AWS for a 3rd place. (Both Spark and cloud technologies can be mentioned in various formulas) (Side note - I believe that a prevalence of 'English' should be understood as the employers putting the biggest emphasis on English as compared to other skills, relatively)
+
+![image](https://preview.redd.it/ky3kq045jzz91.png?width=1065&format=png&auto=webp&s=b4070aad40839192066cc45b9c03eac9f1682b5e)
+
+Most of data engineering jobs fall under 'Data' section. If we include the rest of data professionals, we can see a relatively stronger emphasis on skills such as 'English', 'ETL' and Power BI.
+
+![image](https://preview.redd.it/uz8s0i3xjzz91.png?width=1072&format=png&auto=webp&s=49a7aed1e79e0f0040c72503b66635717dbeda13)
+
+Other insights from the dashboard, such as companies, experience level, or % of offers from other countries than Poland. Side note - B2B contracting is very popularized among IT industry in Poland. Also - companies included as best paying are not necessarily the best paying on the market, some companies do not display their salaries or don't bother with job postings on such websites (not mentioning relatively low record count).
+
+-------------------------------------------------
+
 If you want to run an ETL script, look into a code in Powershell scripts to find about a logic. First you'll need to install and configure Python virtual environment along with dependencies, then you can run a script. For more instructions, run a command:
 
 python justjoinit_ETL.py --help
