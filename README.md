@@ -56,7 +56,7 @@ Update 14.11.2022: I have approached to resolve that issue as addressed in dbt v
 
 - Applying automatized backup policy.
 
-I've implemented some sort of policy on my computer but it is not included in a script. Good idea would be to utilize f.e. Google Drive API to retain data in a cloud.
+I've implemented some sort of policy on my computer but it is not included in a script. Good idea would be to utilize f.e. Google Drive API to retain data in a cloud (or of course some paid option f.e. Cloud Storage).
 
 - Making script resilient to OS/hardware issues.
 
