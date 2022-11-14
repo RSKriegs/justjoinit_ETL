@@ -1,0 +1,63 @@
+version: 2
+
+models:
+    - name: skills_view
+      description: "View for skills columns"
+      columns:
+          - name: Id_jjit
+            description: "The primary key for record"
+          - name: skills_name_0
+            description: "A skill name"
+    - name: employment_types_view
+      description: "View for employment types columns"
+      columns:
+          - name: Id_jjit
+            description: "The primary key for record"
+          - name: Employment_type
+            description: "An employment type"
+    - name: deduplicated_offers_view
+      description: "Deduplicated offers as follows in SQL script"
+      columns:
+          - name: Title
+          - name: Street
+          - name: City
+          - name: Country_code
+          - name: Address_text
+          - name: Marker_icon
+          - name: Workplace_type
+          - name: Company_name
+          - name: Company_url
+          - name: Experience_level
+          - name: Latitude
+          - name: Longitude
+          - name: Published_at
+          - name: Remote_interview
+          - name: Id_jjit
+          - name: Company_logo
+          - name: Remote
+          - name: Open_to_hire_Ukrainians
+          - name: Company_size_from
+          - name: Company_size_to
+          - name: if_permanent
+          - name: salary_from_permanent
+          - name: salary_to_permanent
+          - name: salary_currency_permanent
+          - name: if_b2b
+          - name: salary_from_b2b
+          - name: salary_to_b2b
+          - name: salary_currency_b2b
+          - name: if_mandate
+          - name: salary_from_mandate
+          - name: salary_to_mandate
+          - name: salary_currency_mandate
+          - name: if_other
+          - name: salary_from_other
+          - name: salary_to_other
+          - name: salary_currency_other
+          - name: currency_exchange_rate
+          - name: skills_name_0
+          - name: skills_value_0
+          - name: skills_name_1
+          - name: skills_value_1
+          - name: skills_name_2
+          - name: skills_value_2

@@ -1,0 +1,11 @@
+bigquery:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: service-account
+      project: justjoinit-offers
+      dataset: offers
+      location: EU
+      threads: 4
+      keyfile: /.google/credentials/google_credentials.json
