@@ -26,6 +26,7 @@ Some manual tips regarding a dashboard:
 If you want to get more info regarding how I handled deduplication, look into /dbt files. I also included two views that I used for some visualizations in dashboards (I have joined these views with original table on dashboards). On Looker Studio, I also created 2 custom metrics - one is "expected_salary", which is simply an average of all proposed salaries for given offer (those could vary if they proposed multiple employment options), and "company_size_groups", where I group companies based on their size as given in job adverts.
 
 I demonstrate that dashboard on Youtube: https://youtu.be/1OY9RX3LoHk
+The data is also present on Kaggle: https://www.kaggle.com/datasets/kriegsmaschine/polish-it-job-board-data-from-2022
 
 Sample interesting insights, specifically for data engineers:
 ![Image](https://user-images.githubusercontent.com/75480707/201771367-d5e2e059-7307-43c3-8adf-953276be30fe.png)
