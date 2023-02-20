@@ -4,6 +4,7 @@ UPDATE 14.11.2022: At this point I am treating the project as finished, despite 
 
 This is an ETL that extracts data from justjoin.it (a Polish IT jobboard) website API into local machine, transforms it locally, and loads into Google BigQuery. <del>The dataset from BigQuery fuels two Looker Studio dashboards below</del> The dashboards are no longer working as BigQuery tables expired. Here is a short demo on Youtube:
 https://youtu.be/1OY9RX3LoHk
+
 And the final dataset that I've published on Kaggle:
 https://www.kaggle.com/datasets/kriegsmaschine/polish-it-job-board-data-from-2022
 
