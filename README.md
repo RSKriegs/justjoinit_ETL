@@ -4,6 +4,8 @@ UPDATE 14.11.2022: At this point I am treating the project as finished, despite 
 
 This is an ETL that extracts data from justjoin.it (a Polish IT jobboard) website API into local machine, transforms it locally, and loads into Google BigQuery. <del>The dataset from BigQuery fuels two Looker Studio dashboards below</del> The dashboards are no longer working as BigQuery tables expired. Here is a short demo on Youtube:
 https://youtu.be/1OY9RX3LoHk
+And the final dataset that I've published on Kaggle:
+https://www.kaggle.com/datasets/kriegsmaschine/polish-it-job-board-data-from-2022
 
 If you still want to access dashboards, here are the links.
 https://datastudio.google.com/reporting/ce85abd5-19c5-4fa4-9ae9-83db79f1ea32 (with deduplicated data)
@@ -26,9 +28,6 @@ Some manual tips regarding a dashboard:
 - regarding the last previous two - also remember that 'Job Title' and 'Company' fields are case-sensitive, however, in case of 'Skills' field, always look after lower characters.
 
 If you want to get more info regarding how I handled deduplication, look into /dbt files. I also included two views that I used for some visualizations in dashboards (I have joined these views with original table on dashboards). On Looker Studio, I also created 2 custom metrics - one is "expected_salary", which is simply an average of all proposed salaries for given offer (those could vary if they proposed multiple employment options), and "company_size_groups", where I group companies based on their size as given in job adverts.
-
-I demonstrate that dashboard on Youtube: https://youtu.be/1OY9RX3LoHk
-The data is also present on Kaggle: https://www.kaggle.com/datasets/kriegsmaschine/polish-it-job-board-data-from-2022
 
 Sample interesting insights, specifically for data engineers:
 ![Image](https://user-images.githubusercontent.com/75480707/201771367-d5e2e059-7307-43c3-8adf-953276be30fe.png)
