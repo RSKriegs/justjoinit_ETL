@@ -8,8 +8,10 @@ https://youtu.be/1OY9RX3LoHk
 And the final dataset that I've published on Kaggle:
 https://www.kaggle.com/datasets/kriegsmaschine/polish-it-job-board-data-from-2022
 
-If you still want to access dashboards, here are the links.
+If you still want to access dashboards, here are the links:
+
 https://datastudio.google.com/reporting/ce85abd5-19c5-4fa4-9ae9-83db79f1ea32 (with deduplicated data)
+
 https://datastudio.google.com/reporting/aff55800-36a9-45a0-b1ee-c88c193a0a92 (without deduplication)
 
 It should be visible to anybody on the internet. If not, try to log into your free Google account.
