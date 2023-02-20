@@ -2,8 +2,10 @@ UPDATE 14.11.2022: At this point I am treating the project as finished, despite 
 
 ---------
 
-This is an ETL that extracts data from justjoin.it (a Polish IT jobboard) website API into local machine, transforms it locally, and loads into Google BigQuery. The dataset from BigQuery fuels two Looker Studio dashboards below:
+This is an ETL that extracts data from justjoin.it (a Polish IT jobboard) website API into local machine, transforms it locally, and loads into Google BigQuery. <del>The dataset from BigQuery fuels two Looker Studio dashboards below</del> The dashboards are no longer working as BigQuery tables expired. Here is a short demo on Youtube:
+https://youtu.be/1OY9RX3LoHk
 
+If you still want to access dashboards, here are the links.
 https://datastudio.google.com/reporting/ce85abd5-19c5-4fa4-9ae9-83db79f1ea32 (with deduplicated data)
 https://datastudio.google.com/reporting/aff55800-36a9-45a0-b1ee-c88c193a0a92 (without deduplication)
 
