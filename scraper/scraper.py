@@ -1,7 +1,8 @@
 #TODO
 #1. fix 'Skills' bracket issue
-#2. Cleanup/maybe some optimizations
+#2. Cleanup/modularization/maybe some optimizations
 #3. Deduplications
+#4. Any bug fixes
 import json
 
 from selenium import webdriver
