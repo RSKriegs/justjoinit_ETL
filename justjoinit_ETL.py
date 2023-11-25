@@ -34,7 +34,6 @@ class Extractor:
     def create_dataframe(self):
         data = []
         data_json = self.load_jjit_data()
-        print(data_json[0])
         i = 0
         for record in data_json:
             data.append([
