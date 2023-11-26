@@ -121,10 +121,7 @@ for link in set_of_links:
                                     '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[1]/div[2]/div[2]/div[1]/div[2]/div',
                                     "innerHTML") #partially broken
     offer["salary"]["lower"]  = extract_array(driver, 
-                                    '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[1]/div[2]/div[2]/div[2]/div[1]/div/div/span[1]',
-                                    "innerHTML") #partially broken
-    offer["salary"]["lower"]  = extract_array(driver, 
-                                    '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[1]/div[2]/div[2]/div[2]/div[1]',
+                                    '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[1]/div[2]/div[2]/div[2]/div[1]/div/div/span[1]/span[1]',
                                     "innerHTML") #partially broken
     offer["salary"]["upper"]  = extract_array(driver, 
                                     '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[1]/div[2]/div[2]/div[2]/div[1]/div/div/span[1]/span[2]',
