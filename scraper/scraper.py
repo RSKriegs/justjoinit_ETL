@@ -1,8 +1,9 @@
 #TODO
-#1. fix 'Skills' bracket issue
-#2. Cleanup/modularization/maybe some optimizations
-#3. Deduplications
-#4. Any bug fixes
+#1. fix 'Skills' bracket issue - for some reason it just doesn't detect the proper xPath at all
+#2. fix 'Location' bracket issue - doesn't perform as expected for multiple locations
+#3. Cleanup/modularization/maybe some optimizations
+#4. Deduplications
+#5. Any bug fixes
 import json
 
 from selenium import webdriver
@@ -115,7 +116,7 @@ for link in set_of_links:
                                     "innerHTML")
     offer["location"]         = extract_array(driver, 
                                     '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[1]/div[2]/div[2]/div[1]/div[2]/div',
-                                    "innerHTML")
+                                    "innerHTML") #partially broken
     offer["salary"]["lower"]  = extract_array(driver, 
                                     '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[1]/div[2]/div[2]/div[2]/div[1]/div/div/span[1]/span[1]',
                                     "innerHTML")
@@ -146,7 +147,5 @@ for link in set_of_links:
     
 print(list_of_offers)
 
-with open('offers.json', 'r+', newline='') as json_file:
-    json.dump(json.load(json_file).append(list_of_offers), json_file, 
-                        indent=4,  
-                        separators=(',',': '))
+with open('offers.json', 'w', newline='') as json_file:
+    json.load(list_of_offers, json_file, indent=4)
