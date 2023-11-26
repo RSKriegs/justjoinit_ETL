@@ -1,9 +1,12 @@
 #TODO
-#1. fix 'Skills' bracket issue - for some reason it just doesn't detect the proper xPath at all
-#2. fix 'Location' bracket issue - doesn't perform as expected for multiple locations
-#3. Cleanup/modularization/maybe some optimizations
-#4. Deduplications
-#5. Any bug fixes
+#1. make offer a class and create instances - should be a quick fix
+#2. fix 'Skills' bracket issue - for some reason it just doesn't detect the proper xPath at all
+#3. fix 'Location' bracket issue - doesn't perform as expected for multiple locations
+#4. fix salaries - sometimes they do not get scrapped
+#5. Cleanup/modularization/maybe some optimizations
+#6. Deduplications
+#7. merge json files
+#8. Any other bug fixes
 import json
 
 from selenium import webdriver
@@ -118,8 +121,11 @@ for link in set_of_links:
                                     '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[1]/div[2]/div[2]/div[1]/div[2]/div',
                                     "innerHTML") #partially broken
     offer["salary"]["lower"]  = extract_array(driver, 
-                                    '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[1]/div[2]/div[2]/div[2]/div[1]/div/div/span[1]/span[1]',
-                                    "innerHTML")
+                                    '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[1]/div[2]/div[2]/div[2]/div[1]/div/div/span[1]',
+                                    "innerHTML") #partially broken
+    offer["salary"]["lower"]  = extract_array(driver, 
+                                    '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[1]/div[2]/div[2]/div[2]/div[1]',
+                                    "innerHTML") #partially broken
     offer["salary"]["upper"]  = extract_array(driver, 
                                     '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[1]/div[2]/div[2]/div[2]/div[1]/div/div/span[1]/span[2]',
                                     "innerHTML")
@@ -142,10 +148,16 @@ for link in set_of_links:
     offer["description"]      = extract_record(driver, 
                                     '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[5]',
                                     "innerHTML")
-    list_of_offers.append(offer)
+    
+    if offer["location"] == None: #do this if there is an actual array instead of the record
+        offer["location"]         = driver.find_element(By.XPATH, 
+                                    '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[1]/div[2]/div[2]/div[1]/div[2]/button/div'
+                                    ).text
+    list_of_offers.append(str(offer)) #temp fix - look #1
+    print(offer)
     driver.quit()
     
 print(list_of_offers)
 
-with open('offers.json', 'w', newline='') as json_file:
-    json.load(list_of_offers, json_file, indent=4)
+with open('offers_test.json', 'w', newline='') as json_file:
+    json.dump(list_of_offers, json_file)
