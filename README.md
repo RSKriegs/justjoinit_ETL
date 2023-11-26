@@ -1,3 +1,7 @@
+UPDATE 26.11.2023: Added a prototype of a justjoin.it web crawler. Requires Selenium. Has some unadressed issues that I would like to improve in a future. Also awaits potential developments.
+
+UPDATE 17.11.2023: it seems that justjoin.it has shut down its API, so this script won't work anymore :( the only option left is to write some web scraping code instead.
+
 UPDATE 14.11.2022: At this point I am treating the project as finished, despite its liabilities described below. I might come back to it if I find more time. I have added the 2nd version of dashboard with deduplicated data, and some dbt files from the environment I worked with. I will try to update data until the end of the year.
 
 ---------
