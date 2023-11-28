@@ -1,8 +1,7 @@
 #TODO
-#1. fix 'Skills' bracket issue - for some reason it just doesn't detect the proper xPath at all
-#2. Cleanup/modularization/maybe some optimizations/nice-to-haves like Docker
-#3. Deduplications - if needed, look -> SCD2
-#4. Any other bug fixes
+#1. Cleanup/modularization/maybe some optimizations/nice-to-haves like Docker
+#2. Deduplications - if needed, look -> SCD2
+#3. Any other bug fixes
 
 # Set up for MS Edge
 
@@ -34,8 +33,10 @@ class Offer:
         return f"Offer(link='{self.link}'"
 
     @staticmethod
-    def extract_record(driver, xpath, attribute):
-        if attribute == 'text':
+    def extract_record(driver, xpath, attribute = None):
+        if not attribute:
+            element = driver.find_element(By.XPATH, xpath)
+        elif attribute == 'text':
             print(driver, xpath)
             element = driver.find_element(By.XPATH, xpath).text
         else:
@@ -50,21 +51,6 @@ class Offer:
             return elements
         else:
             return None
-
-    # disabled as not used due to failures to extract Skills
-    # @staticmethod
-    # def extract_struct(driver, left_xpath, right_xpath1, right_xpath2, attribute):
-    #     temp_list = []
-    #     n = 1
-    #     while True:
-    #         WebElements_1 = Offer.extract_record(driver, f'{left_xpath}[{n}]{right_xpath1}', attribute)
-    #         WebElements_2 = Offer.extract_record(driver, f'{left_xpath}[{n}]{right_xpath2}', attribute)
-    #         if WebElements_1:
-    #             temp_list.append({WebElements_1: WebElements_2})
-    #             n + 1
-    #         else:
-    #             break
-    #     return temp_list
 
 def load_config(file):
     f = open(file)
@@ -163,7 +149,7 @@ if __name__ == '__main__':
                                         "innerHTML")
         
         offer.description      = offer.extract_record(driver, 
-                                        '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[4]',
+                                        '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[5]',
                                         "innerHTML")
         
         #extracting salaries
@@ -190,7 +176,7 @@ if __name__ == '__main__':
         
         #extracting location
         try:
-            offer.location         = offer.extract_record(driver, 
+            offer.location          = offer.extract_record(driver, 
                                         '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[1]/div[2]/div[2]/div[1]/div[2]/div',
                                         "innerHTML")
         except: #do this if there is an actual array instead of the record
@@ -198,11 +184,18 @@ if __name__ == '__main__':
                                         '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[1]/div[2]/div[2]/div[1]/div[2]/button/div',
                                         "text")
 
-        # TODO skills - constantly failing for some reason, cannot find neither xpath nor CSS selector even though it's given proper path.
-        # offer.skills           = offer.extract_struct(driver,
-        #                                 '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[3]/div/ul/div',
-        #                                 "/div/h6", "/div/span", "innerHTML")
-
+        #extracting skills
+        list_of_skills = []
+        skills_temp             = offer.extract_record(driver,
+                                        '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[4]/div/ul')
+        
+        key_temps = skills_temp.find_elements(By.TAG_NAME,'h6')
+        value_temps = skills_temp.find_elements(By.TAG_NAME,'span')
+        for i in range(0, len(key_temps)):
+            list_of_skills.append({key_temps[i].get_attribute("innerHTML") : value_temps[i].get_attribute("innerHTML")})
+        
+        offer.skills = list_of_skills
+        
         print(f'''Final offer dict:
               
               {offer.__dict__}''')
