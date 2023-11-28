@@ -130,7 +130,6 @@ if __name__ == '__main__':
           {set_of_links}''')
 
     list_of_offers = []
-    set_of_links = ['https://justjoin.it/offers/dsv-iss-senior-site-reliability-engineer-warszawa-317276']
     for link in set_of_links:
         offer = Offer(link)
         print(f'Following offer is processed: {offer.__str__()}')
