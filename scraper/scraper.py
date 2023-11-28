@@ -115,7 +115,6 @@ if __name__ == '__main__':
           
           {set_of_links}''')
 
-    set_of_links = ['https://justjoin.it/offers/virtuslab-data-engineer-with-snowflake-expert-wroclaw-324716']
     list_of_offers = []
     for link in set_of_links:
         offer = Offer(link)
