@@ -34,9 +34,7 @@ class Offer:
 
     @staticmethod
     def extract_record(driver, xpath, attribute = None):
-        if not attribute:
-            element = driver.find_element(By.XPATH, xpath)
-        elif attribute == 'text':
+        if attribute == 'text':
             print(driver, xpath)
             element = driver.find_element(By.XPATH, xpath).text
         else:
@@ -51,6 +49,15 @@ class Offer:
             return elements
         else:
             return None
+        
+    @staticmethod
+    def extract_skills(driver, xpath, attribute, key_tag_name, value_tag_name):
+        WebElements = driver.find_element(By.XPATH, xpath)
+
+        KeyTemps = WebElements.find_elements(By.TAG_NAME,key_tag_name)
+        ValueTemps = WebElements.find_elements(By.TAG_NAME, value_tag_name)
+        elements = {KeyTemps[i].get_attribute(attribute) : ValueTemps[i].get_attribute(attribute) for element in KeyTemps}
+        return elements
 
 def load_config(file):
     f = open(file)
@@ -148,10 +155,6 @@ if __name__ == '__main__':
                                         '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[2]/div[4]/div[2]/div[2]',
                                         "innerHTML")
         
-        offer.description      = offer.extract_record(driver, 
-                                        '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[5]',
-                                        "innerHTML")
-        
         #extracting salaries
         list_of_salaries = []
         employment_types        = offer.extract_record(driver, 
@@ -184,17 +187,23 @@ if __name__ == '__main__':
                                         '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[1]/div[2]/div[2]/div[1]/div[2]/button/div',
                                         "text")
 
-        #extracting skills
-        list_of_skills = []
-        skills_temp             = offer.extract_record(driver,
-                                        '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[4]/div/ul')
-        
-        key_temps = skills_temp.find_elements(By.TAG_NAME,'h6')
-        value_temps = skills_temp.find_elements(By.TAG_NAME,'span')
-        for i in range(0, len(key_temps)):
-            list_of_skills.append({key_temps[i].get_attribute("innerHTML") : value_temps[i].get_attribute("innerHTML")})
-        
-        offer.skills = list_of_skills
+        #extracting skills & description - their positioning seems to be relaed
+        try:
+            offer.skills            = offer.extract_skills(driver,
+                                            '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[4]/div/ul',
+                                            "innerHTML", "h6", "span")
+            
+            offer.description       = offer.extract_record(driver, 
+                                        '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[5]',
+                                        "innerHTML")
+        except:
+            offer.skills            = offer.extract_skills(driver,
+                                            '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[3]/div/ul',
+                                            "innerHTML", "h6", "span")
+            
+            offer.description       = offer.extract_record(driver, 
+                                        '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[4]',
+                                        "innerHTML")
         
         print(f'''Final offer dict:
               
