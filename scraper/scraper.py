@@ -30,7 +30,7 @@ class Offer:
         self.description        = None
 
     def __str__(self):
-        return f"Offer(link='{self.link}'"
+        return f"Offer(link='{self.link}')"
 
     @staticmethod
     def extract_record(driver, xpath, attribute = None):
@@ -56,7 +56,7 @@ class Offer:
 
         KeyTemps = WebElements.find_elements(By.TAG_NAME,key_tag_name)
         ValueTemps = WebElements.find_elements(By.TAG_NAME, value_tag_name)
-        elements = {KeyTemps[i].get_attribute(attribute) : ValueTemps[i].get_attribute(attribute) for element in KeyTemps}
+        elements = {KeyTemps[i].get_attribute(attribute) : ValueTemps[i].get_attribute(attribute) for i in range(0, len(KeyTemps))}
         return elements
 
 def load_config(file):
@@ -66,12 +66,12 @@ def load_config(file):
 def write_json(file, data, indent):
     if not os.path.isfile(file):
         with open(file, mode='w', newline='') as file:
-            json.dump(data, file, indent = indent)
+            json.dump([data], file, indent = indent)
     else:
         with open(file) as infile:
             temp = json.load(infile)
 
-        temp.extend(data)
+        temp.append(data)
         with open(file, mode='w', newline='') as file:
             json.dump(temp, file, indent = indent)
 
@@ -187,30 +187,41 @@ if __name__ == '__main__':
                                         '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[1]/div[2]/div[2]/div[1]/div[2]/button/div',
                                         "text")
 
-        #extracting skills & description - their positioning seems to be relaed
+        #extracting skills & description
+        #their positioning seems to be related and both may lay in different positions depending on the job offer, hence the logic
         try:
             offer.skills            = offer.extract_skills(driver,
                                             '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[4]/div/ul',
                                             "innerHTML", "h6", "span")
-            
-            offer.description       = offer.extract_record(driver, 
-                                        '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[5]',
-                                        "innerHTML")
         except:
-            offer.skills            = offer.extract_skills(driver,
-                                            '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[3]/div/ul',
-                                            "innerHTML", "h6", "span")
+            pass
             
+        if offer.skills:
             offer.description       = offer.extract_record(driver, 
-                                        '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[4]',
-                                        "innerHTML")
+                                            '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[5]',
+                                            "innerHTML")
+        else:
+            try:
+                print(f'First scenario for skills extraction for {offer.__str__()} failed - proceeding further')
+                offer.skills            = offer.extract_skills(driver,
+                                                '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[3]/div/ul',
+                                                "innerHTML", "h6", "span")
+                
+                offer.description       = offer.extract_record(driver, 
+                                                '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[4]',
+                                                "innerHTML")
+            except:
+                print(f'Could not find skills for {offer.__str__()} - leaving empty dict, default setting for description')
+                
+                offer.description       = offer.extract_record(driver, 
+                                                '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[5]',
+                                                "innerHTML")
         
         print(f'''Final offer dict:
               
               {offer.__dict__}''')
         
-        list_of_offers.append(offer.__dict__)
+        write_json(config["offers_file"], offer.__dict__, 4)
         driver.quit()
 
-    write_json(config["offers_file"], list_of_offers, 4)
     print(f'Offers extraction process finished - check {config["offers_file"]} file')
