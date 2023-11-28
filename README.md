@@ -1,4 +1,4 @@
-UPDATE 26.11.2023: Added a prototype of a justjoin.it web crawler. Requires Selenium. Has several unadressed issues that I would like to improve in a future. Also awaits potential developments.
+UPDATE 26-28.11.2023: Added a prototype of a justjoin.it web crawler. Has some unadressed issues that I would like to improve in a future. Navigate to ```/scraper``` directory.
 
 UPDATE 17.11.2023: it seems that justjoin.it has shut down its API, so this script won't work anymore :( the only option left is to write some web scraping code instead.
 
