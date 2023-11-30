@@ -1,3 +1,5 @@
+UPDATE 30.11.2023: Added a Jupyter Notebook prepared for comparative analysis of 2022 (look Kaggle links in description) & 2023 (from web crawler) data. Navigate to ```/analytics``` directory.
+
 UPDATE 26-28.11.2023: Added a prototype of a justjoin.it web crawler. Works on MS Edge (should be working on other browsers with minimal changes though). Navigate to ```/scraper``` directory.
 
 UPDATE 17.11.2023: it seems that justjoin.it has shut down its API, so this script won't work anymore :( the only option left is to write some web scraping code instead.
