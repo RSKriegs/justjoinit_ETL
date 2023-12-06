@@ -75,6 +75,97 @@ def write_json(file, data, indent):
         with open(file, mode='w', newline='') as file:
             json.dump(temp, file, indent = indent)
 
+def process_offer(link, driver):
+    offer = Offer(link)
+    print(f'Following offer is processed: {offer.__str__()}')
+
+    offer.name              = offer.extract_record(driver, 
+                                    '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[1]/div[2]/div[2]/h1',
+                                    "innerHTML")
+    
+    offer.company           = offer.extract_record(driver, 
+                                    '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[1]/div[2]/div[2]/div[1]/div[1]',
+                                    "text")
+    
+    offer.category          = offer.extract_record(driver, 
+                                    '//*[@id="__next"]/div[2]/div[2]/div/div[1]/div/a[3]',
+                                    "innerHTML")
+
+    offer.type_of_work      = offer.extract_array(driver, 
+                                    '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[2]/div[1]/div[2]/div[2]',
+                                    "innerHTML")
+    
+    offer.experience        = offer.extract_array(driver, 
+                                    '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[2]/div[2]/div[2]/div[2]',
+                                    "innerHTML")
+    
+    offer.operating_mode    = offer.extract_array(driver, 
+                                    '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[2]/div[4]/div[2]/div[2]',
+                                    "innerHTML")
+    
+    #extracting salaries
+    list_of_salaries = []
+    employment_types        = offer.extract_record(driver, 
+                                    '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[2]/div[3]/div[2]/div[2]',
+                                    "innerHTML").split(',')
+    
+    salaries_lower          = offer.extract_array(driver, 
+                                    '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[1]/div[2]/div[2]/div[2]/div[1]/div/div/span[1]/span[1]',
+                                    "innerHTML") #partially broken
+    
+    salaries_upper          = offer.extract_array(driver, 
+                                    '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[1]/div[2]/div[2]/div[2]/div[1]/div/div/span[1]/span[2]',
+                                    "innerHTML")
+    
+    for i in range(0, len(employment_types)):
+        list_of_salaries.append({"employment_type"  : employment_types[i],
+                                "lower"             : salaries_lower[i] if salaries_lower else None,
+                                "upper"             : salaries_upper[i] if salaries_upper else None
+                                })
+    
+    offer.salaries = list_of_salaries
+    
+    #extracting location
+    try:
+        offer.location          = offer.extract_record(driver, 
+                                    '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[1]/div[2]/div[2]/div[1]/div[2]/div',
+                                    "innerHTML")
+    except: #do this if there is an actual array instead of the record
+        offer.location          = offer.extract_record(driver, 
+                                    '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[1]/div[2]/div[2]/div[1]/div[2]/button/div',
+                                    "text")
+
+    #extracting skills & description
+    #their positioning seems to be related and both may lay in different positions depending on the job offer, hence the logic
+    try:
+        offer.skills            = offer.extract_skills(driver,
+                                        '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[4]/div/ul',
+                                        "innerHTML", "h6", "span")
+    except:
+        pass
+        
+    if offer.skills:
+        offer.description       = offer.extract_record(driver, 
+                                        '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[5]',
+                                        "innerHTML")
+    else:
+        try:
+            print(f'First scenario for skills extraction for {offer.__str__()} failed - proceeding further')
+            offer.skills            = offer.extract_skills(driver,
+                                            '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[3]/div/ul',
+                                            "innerHTML", "h6", "span")
+            
+            offer.description       = offer.extract_record(driver, 
+                                            '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[4]',
+                                            "innerHTML")
+        except:
+            print(f'Could not find skills for {offer.__str__()} - leaving empty dict, default setting for description')
+            
+            offer.description       = offer.extract_record(driver, 
+                                            '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[5]',
+                                            "innerHTML")
+    return offer
+
 if __name__ == '__main__':
     config = load_config('scraper/config.json')
 
@@ -124,98 +215,11 @@ if __name__ == '__main__':
 
     list_of_offers = []
     for link in set_of_links:
-        offer = Offer(link)
-        print(f'Following offer is processed: {offer.__str__()}')
         service = Service(edgedriver_path)
         driver = webdriver.Edge(service=service)
         driver.get(link)
         sleep(randint(3, 5))
-
-        offer.name              = offer.extract_record(driver, 
-                                        '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[1]/div[2]/div[2]/h1',
-                                        "innerHTML")
-        
-        offer.company           = offer.extract_record(driver, 
-                                        '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[1]/div[2]/div[2]/div[1]/div[1]',
-                                        "text")
-        
-        offer.category          = offer.extract_record(driver, 
-                                        '//*[@id="__next"]/div[2]/div[2]/div/div[1]/div/a[3]',
-                                        "innerHTML")
-
-        offer.type_of_work      = offer.extract_array(driver, 
-                                        '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[2]/div[1]/div[2]/div[2]',
-                                        "innerHTML")
-        
-        offer.experience        = offer.extract_array(driver, 
-                                        '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[2]/div[2]/div[2]/div[2]',
-                                        "innerHTML")
-        
-        offer.operating_mode    = offer.extract_array(driver, 
-                                        '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[2]/div[4]/div[2]/div[2]',
-                                        "innerHTML")
-        
-        #extracting salaries
-        list_of_salaries = []
-        employment_types        = offer.extract_record(driver, 
-                                        '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[2]/div[3]/div[2]/div[2]',
-                                        "innerHTML").split(',')
-        
-        salaries_lower          = offer.extract_array(driver, 
-                                        '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[1]/div[2]/div[2]/div[2]/div[1]/div/div/span[1]/span[1]',
-                                        "innerHTML") #partially broken
-        
-        salaries_upper          = offer.extract_array(driver, 
-                                        '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[1]/div[2]/div[2]/div[2]/div[1]/div/div/span[1]/span[2]',
-                                        "innerHTML")
-        
-        for i in range(0, len(employment_types)):
-            list_of_salaries.append({"employment_type"  : employment_types[i],
-                                    "lower"             : salaries_lower[i] if salaries_lower else None,
-                                    "upper"             : salaries_upper[i] if salaries_upper else None
-                                    })
-        
-        offer.salaries = list_of_salaries
-        
-        #extracting location
-        try:
-            offer.location          = offer.extract_record(driver, 
-                                        '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[1]/div[2]/div[2]/div[1]/div[2]/div',
-                                        "innerHTML")
-        except: #do this if there is an actual array instead of the record
-            offer.location          = offer.extract_record(driver, 
-                                        '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[1]/div[2]/div[2]/div[1]/div[2]/button/div',
-                                        "text")
-
-        #extracting skills & description
-        #their positioning seems to be related and both may lay in different positions depending on the job offer, hence the logic
-        try:
-            offer.skills            = offer.extract_skills(driver,
-                                            '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[4]/div/ul',
-                                            "innerHTML", "h6", "span")
-        except:
-            pass
-            
-        if offer.skills:
-            offer.description       = offer.extract_record(driver, 
-                                            '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[5]',
-                                            "innerHTML")
-        else:
-            try:
-                print(f'First scenario for skills extraction for {offer.__str__()} failed - proceeding further')
-                offer.skills            = offer.extract_skills(driver,
-                                                '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[3]/div/ul',
-                                                "innerHTML", "h6", "span")
-                
-                offer.description       = offer.extract_record(driver, 
-                                                '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[4]',
-                                                "innerHTML")
-            except:
-                print(f'Could not find skills for {offer.__str__()} - leaving empty dict, default setting for description')
-                
-                offer.description       = offer.extract_record(driver, 
-                                                '//*[@id="__next"]/div[2]/div[2]/div/div[2]/div[2]/div[5]',
-                                                "innerHTML")
+        offer = process_offer(link, driver)
         
         print(f'''Final offer dict:
               
